@@ -21,8 +21,7 @@
 
 ## Introduction
 
-**nf-core/captnseq** is a bioinformatics pipeline that ...
-
+**nf-core/captnseq** [provisional name] is a bioinformatics pipeline that aims to 1) process standard bacterial or plasmidic TIS/Tn-Seq (Transposon Insertion Analysis) data from reads to gene essentiality and 2) digenic interactions calling (if you have High-Throughput Transposon mutagenesis (HTTM) data). The pipeline takes a samplesheet of short-reads FASTQ as input, but you also require a reference genome and features.
 <!-- TODO nf-core:
    Complete this sentence with a 2-3 sentence summary of what types of data the pipeline ingests, a brief overview of the
    major pipeline sections and the types of output it produces. You're giving an overview to someone new
@@ -37,6 +36,8 @@
 
 > [!NOTE]
 > If you are new to Nextflow and nf-core, please refer to [this page](https://nf-co.re/docs/get_started/environment_setup/overview) on how to set-up Nextflow. Make sure to [test your setup](https://nf-co.re/docs/get_started/run-your-first-pipeline) with `-profile test` before running the workflow on actual data.
+
+---------------------------WORK IN PROGRESS AFTER THIS POINT------------------------
 
 <!-- TODO nf-core: Describe the minimum required steps to execute the pipeline, e.g. how to prepare samplesheets.
      Explain what rows and columns represent. For instance (please edit as appropriate):
