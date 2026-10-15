@@ -21,13 +21,7 @@
 
 ## Introduction
 
-**nf-core/captnseq** is a bioinformatics pipeline that ...
-
-<!-- TODO nf-core:
-   Complete this sentence with a 2-3 sentence summary of what types of data the pipeline ingests, a brief overview of the
-   major pipeline sections and the types of output it produces. You're giving an overview to someone new
-   to nf-core here, in 15-20 seconds. For an example, see https://github.com/nf-core/rnaseq/blob/master/README.md#introduction
--->
+**nf-core/captnseq** [provisional name] is a bioinformatics pipeline that aims to 1) process standard bacterial or plasmidic TIS/Tn-Seq (Transposon Insertion Analysis) data from reads to gene essentiality and 2) digenic interactions calling (if you have High-Throughput Transposon mutagenesis (HTTM) data). The pipeline takes a samplesheet of short-reads FASTQ as input, but you also require a reference genome and features.
 
 <!-- TODO nf-core: Include a figure that guides the user through the major workflow steps. Many nf-core
      workflows use the "tube map" design for that. See https://nf-co.re/docs/community/brand/workflow-schematics#examples for examples.   -->
@@ -37,6 +31,8 @@
 
 > [!NOTE]
 > If you are new to Nextflow and nf-core, please refer to [this page](https://nf-co.re/docs/get_started/environment_setup/overview) on how to set-up Nextflow. Make sure to [test your setup](https://nf-co.re/docs/get_started/run-your-first-pipeline) with `-profile test` before running the workflow on actual data.
+
+WORK IN PROGRESS AFTER THIS POINT
 
 <!-- TODO nf-core: Describe the minimum required steps to execute the pipeline, e.g. how to prepare samplesheets.
      Explain what rows and columns represent. For instance (please edit as appropriate):
