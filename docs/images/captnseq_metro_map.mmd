@@ -1,0 +1,70 @@
+%%metro title: nf-core/captnseq
+%%metro style: light
+%%metro line_order: span
+%%metro line: tnseq | Tn-seq analysis | #1f77b4
+%%metro line: qc | QC & reporting | #2ca02c
+
+graph LR
+    subgraph trimming [Read QC & trimming]
+        fastqc([FastQC])
+        cutadapt([Cutadapt])
+        fastp([fastp])
+
+        cutadapt -->|tnseq| fastp
+    end
+
+    subgraph alignment [Alignment]
+        bwa_index([BWA index])
+        bwa_mem([BWA mem])
+        samtools_sort([samtools sort])
+
+        bwa_index -->|tnseq| bwa_mem
+        bwa_mem -->|tnseq| samtools_sort
+    end
+
+    subgraph dedup [Duplicate handling]
+        mark_duplicates([Mark duplicates])
+        flagstat([flagstat])
+
+        mark_duplicates -->|qc| flagstat
+    end
+
+    subgraph sites [Insertion sites]
+        bam2sam([BAM to SAM])
+        sam2sites([SAM to sites])
+
+        bam2sam -->|tnseq| sam2sites
+    end
+
+    subgraph genes [Gene-level calling]
+        intersect([Intersect with genes])
+        sites2genes([Sites to genes])
+        statisti_call([Statistical call])
+
+        intersect -->|tnseq| sites2genes
+        sites2genes -->|tnseq| statisti_call
+    end
+
+    subgraph reporting [Reporting]
+        grep_chr([Other chromosomes])
+        mapped_counts([Mapped read counts])
+        insertion_counts([Insertion counts])
+        chr_counts([Chromosome counts])
+        multiqc([MultiQC])
+
+        grep_chr -->|qc| chr_counts
+    end
+
+    %% Inter-section edges
+    fastp -->|tnseq| bwa_mem
+    samtools_sort -->|tnseq| mark_duplicates
+    mark_duplicates -->|tnseq| bam2sam
+    sam2sites -->|tnseq| intersect
+
+    fastqc -->|qc| multiqc
+    cutadapt -->|qc| multiqc
+    fastp -->|qc| multiqc
+    flagstat -->|qc| multiqc
+    flagstat -->|qc| mapped_counts
+    mark_duplicates -->|qc| grep_chr
+    sam2sites -->|qc| insertion_counts

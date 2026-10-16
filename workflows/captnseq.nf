@@ -14,7 +14,6 @@ include { MARK_DUPLICATES           } from '../modules/local/mark_duplicates'
 include { FLAGSTAT                  } from '../modules/local/flagstat'
 include { BAM2SAM                   } from '../modules/local/bam2sam'
 include { SAM2SITES                 } from '../modules/local/sam2sites'
-include { SAM2SITES_NOTDEDUP        } from '../modules/local/sam2sites_notdedup'
 include { INTERSECT                 } from '../modules/local/intersect'
 include { SITES2GENES               } from '../modules/local/sites2genes'
 include { STATISTI_CALL             } from '../modules/local/statisti_call'
@@ -92,9 +91,8 @@ workflow CAPTNSEQ {
     MARK_DUPLICATES(SAMTOOLS_SORT.out.bam)
     FLAGSTAT(MARK_DUPLICATES.out.markeddup)
 
-    BAM2SAM(MARK_DUPLICATES.out.markeddup.join(MARK_DUPLICATES.out.dedup))
+    BAM2SAM(MARK_DUPLICATES.out.dedup)
     SAM2SITES(BAM2SAM.out.dedup)
-    SAM2SITES_NOTDEDUP(BAM2SAM.out.markeddup)
 
     //
     // Gene-level insertion stats and essentiality calling
