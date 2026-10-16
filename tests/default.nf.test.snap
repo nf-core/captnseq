@@ -310,11 +310,9 @@
                 "test_02_1.trim.fastq.gz:md5,fdd1d99794aae75de7ce5d5f5e42c1d7",
                 "test_02_2.trim.fastq.gz:md5,c305f00a8fde380bf6734e7325e8c730",
                 "test_01.fastp.json:md5,2c0a83ebae0fdce5f5d9101bc8e0e2f0",
-                "test_01.fastp.log:md5,c5996df646f3e435f8c3d76242c660a3",
                 "test_01_R1.fastp.fastq.gz:md5,c4a8db5befcf31893393a7a50076ffb9",
                 "test_01_R2.fastp.fastq.gz:md5,cd45a4ee2cfcde6a6b0fa8958cd0fd2e",
                 "test_02.fastp.json:md5,144c7e7a271c30375c671ba4d614d197",
-                "test_02.fastp.log:md5,e6eba71c422a40fd5ade70f751da3a91",
                 "test_02_R1.fastp.fastq.gz:md5,9c08f72de6dcb27d3fa8b215709d8032",
                 "test_02_R2.fastp.fastq.gz:md5,9fc5736c8bbc028a0f88435d21bee12b",
                 "test_01.bam:md5,c9860ff38371a77fe792eaa991f17715",
@@ -410,7 +408,7 @@
                 "test_02_fixmate.bam:md5,50537ba0009eb71b0b863f6dca4329f7"
             ]
         ],
-        "timestamp": "2026-10-16T15:56:04.689511742",
+        "timestamp": "2026-10-16T16:29:49.245584117",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.0"
