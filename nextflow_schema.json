@@ -106,21 +106,6 @@
                     "enum": ["single_thread", "multi_thread"],
                     "description": "Selects which tier of the params.resources cpu/memory/time map is applied per process.",
                     "fa_icon": "fas fa-microchip"
-                },
-                "resources": {
-                    "type": "object",
-                    "description": "Per-process cpus/memory/time, keyed by process then by execution_mode tier ('single'/'multi'). See conf/modules.config.",
-                    "hidden": true
-                },
-                "sam2sites_params": {
-                    "type": "object",
-                    "description": "Empirical, transposon/library-prep-specific tuning for bin/sam2sites.py.",
-                    "hidden": true
-                },
-                "sites2genes_params": {
-                    "type": "object",
-                    "description": "Gene-length trim percentages for bin/sites2genes.py.",
-                    "hidden": true
                 }
             }
         },
