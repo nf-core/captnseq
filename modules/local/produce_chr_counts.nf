@@ -17,8 +17,8 @@ process PRODUCE_CHR_COUNTS {
     import pandas as pd
 
     all_dfs = []
-    for file in sorted(glob.glob("*-chrcount.tsv")):
-        sample = os.path.basename(file).replace('-chrcount.tsv', '')
+    for file in sorted(glob.glob("*.idxstats")):
+        sample = os.path.basename(file).replace('.idxstats', '')
         df = pd.read_csv(file, sep='\\t', header=None, names=['chr', 'chrom_size', 'mapped_count', 'unmapped_count'])
         df['sample_name'] = sample
         df = df.pivot(index='sample_name', columns='chr', values='mapped_count')

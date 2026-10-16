@@ -5,19 +5,24 @@
 */
 include { FASTQC                 } from '../modules/nf-core/fastqc/main'
 include { MULTIQC                } from '../modules/nf-core/multiqc/main'
-include { CUTADAPT                } from '../modules/local/cutadapt'
-include { FASTP                   } from '../modules/local/fastp'
-include { BWA_INDEX                } from '../modules/local/bwa_index'
-include { BWA_MEM                  } from '../modules/local/bwa_mem'
-include { SAMTOOLS_SORT             } from '../modules/local/samtools_sort'
-include { MARK_DUPLICATES           } from '../modules/local/mark_duplicates'
-include { FLAGSTAT                  } from '../modules/local/flagstat'
-include { BAM2SAM                   } from '../modules/local/bam2sam'
-include { SAM2SITES                 } from '../modules/local/sam2sites'
-include { INTERSECT                 } from '../modules/local/intersect'
-include { SITES2GENES               } from '../modules/local/sites2genes'
-include { STATISTI_CALL             } from '../modules/local/statisti_call'
-include { GREP_OTHER_CHROMOSOMES    } from '../modules/local/grep_other_chromosomes'
+include { CUTADAPT               } from '../modules/nf-core/cutadapt/main'
+include { FASTP                  } from '../modules/nf-core/fastp/main'
+include { BWA_INDEX              } from '../modules/nf-core/bwa/index/main'
+include { BWA_MEM                } from '../modules/nf-core/bwa/mem/main'
+include { SAMTOOLS_VIEW as SAMTOOLS_VIEW_MAPQ    } from '../modules/nf-core/samtools/view/main'
+include { SAMTOOLS_VIEW as SAMTOOLS_VIEW_DEDUP   } from '../modules/nf-core/samtools/view/main'
+include { SAMTOOLS_VIEW as SAMTOOLS_VIEW_BAM2SAM } from '../modules/nf-core/samtools/view/main'
+include { SAMTOOLS_SORT as SAMTOOLS_SORT_NAME    } from '../modules/nf-core/samtools/sort/main'
+include { SAMTOOLS_SORT as SAMTOOLS_SORT_COORD   } from '../modules/nf-core/samtools/sort/main'
+include { SAMTOOLS_FIXMATE       } from '../modules/nf-core/samtools/fixmate/main'
+include { SAMTOOLS_MARKDUP       } from '../modules/nf-core/samtools/markdup/main'
+include { SAMTOOLS_INDEX         } from '../modules/nf-core/samtools/index/main'
+include { SAMTOOLS_FLAGSTAT      } from '../modules/nf-core/samtools/flagstat/main'
+include { SAMTOOLS_IDXSTATS      } from '../modules/nf-core/samtools/idxstats/main'
+include { BEDTOOLS_INTERSECT     } from '../modules/nf-core/bedtools/intersect/main'
+include { SAM2SITES                  } from '../modules/local/sam2sites'
+include { SITES2GENES                } from '../modules/local/sites2genes'
+include { STATISTI_CALL              } from '../modules/local/statisti_call'
 include { PRODUCE_MAPPED_READ_COUNTS } from '../modules/local/produce_mapped_read_counts'
 include { PRODUCE_INSERTION_COUNTS   } from '../modules/local/produce_insertion_counts'
 include { PRODUCE_CHR_COUNTS         } from '../modules/local/produce_chr_counts'
@@ -53,7 +58,7 @@ workflow CAPTNSEQ {
     ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.map{ _meta, file -> file })
 
     //
-    // Reshape samplesheet into (meta, r1, r2) and fail fast on missing/undersized
+    // Check the samplesheet reads and fail fast on missing/undersized
     // FASTQs - ports the pre-flight check from the original hand-rolled main.nf.
     // This pipeline is paired-end only (BWA read-group / cutadapt / fastp paired
     // flags all assume it), so single-end samplesheet rows are rejected here too.
@@ -75,45 +80,70 @@ workflow CAPTNSEQ {
                 )
             }
         }
-        [ meta, reads[0], reads[1] ]
+        [ meta, reads ]
     }
 
     //
-    // Trimming, alignment, dedup, insertion-site calling
+    // Trimming
     //
     CUTADAPT(ch_reads)
-    FASTP(CUTADAPT.out.reads)
+    FASTP(CUTADAPT.out.reads.map { meta, reads -> [ meta, reads, [] ] }, false, false, false)
 
-    BWA_INDEX(file(params.genome_fasta, checkIfExists: true))
-    BWA_MEM(FASTP.out.reads, BWA_INDEX.out.index)
-    SAMTOOLS_SORT(BWA_MEM.out.sam)
+    //
+    // Alignment: bwa mem -> keep reads above the mapping-quality threshold ->
+    // name-sort -> fixmate -> coordinate-sort
+    //
+    def ch_genome_fasta = channel.value([ [ id: 'genome' ], file(params.genome_fasta, checkIfExists: true) ])
+    BWA_INDEX(ch_genome_fasta)
+    BWA_MEM(FASTP.out.reads, BWA_INDEX.out.index, [ [:], [] ], false)
 
-    MARK_DUPLICATES(SAMTOOLS_SORT.out.bam)
-    FLAGSTAT(MARK_DUPLICATES.out.markeddup)
+    SAMTOOLS_VIEW_MAPQ(BWA_MEM.out.sam.map { meta, sam -> [ meta, sam, [] ] }, [ [:], [], [] ], [ [:], [] ], [ [:], [] ], '')
+    SAMTOOLS_SORT_NAME(SAMTOOLS_VIEW_MAPQ.out.bam, [ [:], [], [] ], '')
+    SAMTOOLS_FIXMATE(SAMTOOLS_SORT_NAME.out.bam, [ [:], [], [] ])
+    SAMTOOLS_SORT_COORD(SAMTOOLS_FIXMATE.out.bam, [ [:], [], [] ], '')
 
-    BAM2SAM(MARK_DUPLICATES.out.dedup)
-    SAM2SITES(BAM2SAM.out.dedup)
+    //
+    // Duplicate marking and removal
+    //
+    SAMTOOLS_MARKDUP(SAMTOOLS_SORT_COORD.out.bam, [ [:], [], [] ])
+    SAMTOOLS_VIEW_DEDUP(SAMTOOLS_MARKDUP.out.bam.map { meta, bam -> [ meta, bam, [] ] }, [ [:], [], [] ], [ [:], [] ], [ [:], [] ], '')
+    SAMTOOLS_FLAGSTAT(SAMTOOLS_MARKDUP.out.bam.map { meta, bam -> [ meta, bam, [] ] })
+
+    // Refuse to continue with a sample that has too few mapped reads
+    SAMTOOLS_FLAGSTAT.out.flagstat.subscribe { meta, flagstat ->
+        def mapped = (flagstat.readLines().find { line -> line.contains(' mapped (') }?.tokenize(' ')?.first() ?: '0') as long
+        if (mapped < (params.min_mapped_reads as long)) {
+            error("map_reads: only ${mapped} mapped reads for ${meta.id} (minimum ${params.min_mapped_reads}) - refusing to treat this as a successful output")
+        }
+    }
+
+    //
+    // Insertion-site calling on the deduplicated reads
+    //
+    SAMTOOLS_VIEW_BAM2SAM(SAMTOOLS_VIEW_DEDUP.out.bam.map { meta, bam -> [ meta, bam, [] ] }, [ [:], [], [] ], [ [:], [] ], [ [:], [] ], '')
+    SAM2SITES(SAMTOOLS_VIEW_BAM2SAM.out.sam)
 
     //
     // Gene-level insertion stats and essentiality calling
     //
     def ch_genome_features = file(params.genome_features, checkIfExists: true)
-    INTERSECT(SAM2SITES.out.unstranded_unnormalized, ch_genome_features)
-    SITES2GENES(INTERSECT.out.bed, ch_genome_features)
+    BEDTOOLS_INTERSECT(SAM2SITES.out.unstranded_unnormalized.map { meta, bg -> [ meta, ch_genome_features, bg ] }, [ [:], [] ], 'bed')
+    SITES2GENES(BEDTOOLS_INTERSECT.out.intersect, ch_genome_features)
     STATISTI_CALL(SITES2GENES.out.tsv)
 
     //
     // Reporting - per-sample chr counts, then whole-run summaries
     //
-    GREP_OTHER_CHROMOSOMES(MARK_DUPLICATES.out.dedup)
+    SAMTOOLS_INDEX(SAMTOOLS_VIEW_DEDUP.out.bam)
+    SAMTOOLS_IDXSTATS(SAMTOOLS_VIEW_DEDUP.out.bam.join(SAMTOOLS_INDEX.out.index))
 
-    PRODUCE_MAPPED_READ_COUNTS(FLAGSTAT.out.flagstat.collect())
-    PRODUCE_INSERTION_COUNTS(SAM2SITES.out.unstranded_unnormalized.map { meta, bg -> bg }.collect())
-    PRODUCE_CHR_COUNTS(GREP_OTHER_CHROMOSOMES.out.chr_count.map { meta, tsv -> tsv }.collect())
+    PRODUCE_MAPPED_READ_COUNTS(SAMTOOLS_FLAGSTAT.out.flagstat.map { _meta, flagstat -> flagstat }.collect())
+    PRODUCE_INSERTION_COUNTS(SAM2SITES.out.unstranded_unnormalized.map { _meta, bg -> bg }.collect())
+    PRODUCE_CHR_COUNTS(SAMTOOLS_IDXSTATS.out.idxstats.map { _meta, idxstats -> idxstats }.collect())
 
-    ch_multiqc_files = ch_multiqc_files.mix(CUTADAPT.out.log)
-    ch_multiqc_files = ch_multiqc_files.mix(FASTP.out.json)
-    ch_multiqc_files = ch_multiqc_files.mix(FLAGSTAT.out.flagstat)
+    ch_multiqc_files = ch_multiqc_files.mix(CUTADAPT.out.log.map { _meta, log -> log })
+    ch_multiqc_files = ch_multiqc_files.mix(FASTP.out.json.map { _meta, json -> json })
+    ch_multiqc_files = ch_multiqc_files.mix(SAMTOOLS_FLAGSTAT.out.flagstat.map { _meta, flagstat -> flagstat })
 
     //
     // Collate and save software versions

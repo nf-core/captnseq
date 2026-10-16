@@ -11,4 +11,5 @@ multiqc/multiqc_report.html
 fastqc/*_fastqc.{html,zip}
 pipeline_info/*.{html,json,txt,yml}
 07_statisticalreport/*.pdf
-02_QualTrim/QC/*.html
+02_QualTrim/*.fastp.html
+02_QualTrim/*.fastp.log
