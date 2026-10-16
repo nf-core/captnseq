@@ -12,10 +12,10 @@ process PRODUCE_MAPPED_READ_COUNTS {
 
     script:
     """
-    for file in *-flagstat.txt; do
+    for file in *.flagstat; do
         line=\$(grep 'mapped (' \$file | head -n 1)
         count=\$(echo \$line | awk '{print \$1}')
-        filename=\$(basename \$file _flagstat.txt)
+        filename=\$(basename \$file .flagstat)-flagstat.txt
         echo -e "\$filename\\t\$count" >> 1_mapped_summary.tsv
     done
     """
