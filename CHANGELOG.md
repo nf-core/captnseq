@@ -9,8 +9,14 @@ Initial release of nf-core/captnseq, created with the [nf-core](https://nf-co.re
 
 ### `Added`
 
+- Insertion-site calling, gene assignment and essentiality calling now run [captnseq-toolkit](https://github.com/simonjeanneau/captnseq-toolkit) v0.1.2 (Bioconda), replacing the `bin/` scripts.
+
 ### `Fixed`
 
 ### `Dependencies`
+
+| Tool             | Previous version | Current version |
+| ---------------- | ---------------- | --------------- |
+| captnseq-toolkit |                  | 0.1.2           |
 
 ### `Deprecated`

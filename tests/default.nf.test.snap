@@ -21,6 +21,9 @@
                 "FASTQC": {
                     "fastqc": "0.12.1"
                 },
+                "SAM2SITES": {
+                    "captnseq-toolkit": "0.1.2"
+                },
                 "SAMTOOLS_FIXMATE": {
                     "samtools": 1.24
                 },
@@ -50,6 +53,12 @@
                 },
                 "SAMTOOLS_VIEW_MAPQ": {
                     "samtools": 1.24
+                },
+                "SITES2GENES": {
+                    "captnseq-toolkit": "0.1.2"
+                },
+                "STATISTI_CALL": {
+                    "captnseq-toolkit": "0.1.2"
                 },
                 "Workflow": {
                     "nf-core/captnseq": "v1.0.0dev"
@@ -408,7 +417,7 @@
                 "test_02_fixmate.bam:md5,50537ba0009eb71b0b863f6dca4329f7"
             ]
         ],
-        "timestamp": "2026-10-16T16:29:49.245584117",
+        "timestamp": "2026-10-27T12:15:27.462764632",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.0"
