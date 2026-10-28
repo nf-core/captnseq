@@ -37,9 +37,9 @@ You provide a samplesheet of paired-end FASTQ files, a reference genome FASTA an
 4. Alignment to the reference genome ([`BWA-MEM`](https://github.com/lh3/bwa)); the BWA index is built from `--genome_fasta`
 5. Mapping-quality filtering, name-sorting, `fixmate` and coordinate-sorting ([`samtools`](https://www.htslib.org/)). A sample with fewer than `--min_mapped_reads` mapped reads stops the run instead of producing silently poor results
 6. Duplicate marking and removal ([`samtools markdup`](https://www.htslib.org/doc/samtools-markdup.html)), plus alignment statistics (`samtools flagstat`)
-7. Insertion-site calling from the deduplicated reads (`bin/sam2sites.py`): one record per insertion site, written as BED and as normalised or raw, stranded or unstranded bedGraph tracks.
-8. Assignment of insertion sites to genes ([`bedtools intersect`](https://bedtools.readthedocs.io/) and `bin/sites2genes.py`). The informative part of each gene can be restricted, so that insertions near the start or end of a gene can be ignored
-9. Essentiality calling (`bin/tradis_essentiality_wscore_fixed.py`, a Python port of the TRADIS essentiality script): genes are classified as essential, ambiguous or non-essential, with QC and changepoint plots for each sample
+7. Insertion-site calling from the deduplicated reads ([`captnseq-toolkit sam2sites`](https://github.com/simonjeanneau/captnseq-toolkit)): one record per insertion site, written as BED and as normalised or raw, stranded or unstranded bedGraph tracks.
+8. Assignment of insertion sites to genes ([`bedtools intersect`](https://bedtools.readthedocs.io/) and [`captnseq-toolkit sites2genes`](https://github.com/simonjeanneau/captnseq-toolkit)). The informative part of each gene can be restricted, so that insertions near the start or end of a gene can be ignored
+9. Essentiality calling ([`captnseq-toolkit essentiality`](https://github.com/simonjeanneau/captnseq-toolkit), a Python port of the TRADIS essentiality script): genes are classified as essential, ambiguous or non-essential, with QC and changepoint plots for each sample
 10. Run-level summaries: mapped reads, insertion-site counts and per-contig read counts for all samples
 11. Aggregated QC report ([`MultiQC`](http://multiqc.info/))
 

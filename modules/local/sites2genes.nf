@@ -1,8 +1,10 @@
-// Ported from pipeline_ref/Snakefile rule `sites2genes` (lines 542-567), a
-// Snakemake `script:` rule wrapping pipeline_ref/scripts/sites2genes.py.
-// Wraps bin/sites2genes.py (CLI port of that script).
+// Assigns insertion sites to genes and counts them per gene.
+// Runs `captnseq-toolkit sites2genes` (https://github.com/simonjeanneau/captnseq-toolkit).
 process SITES2GENES {
     tag "${meta.id}"
+
+    conda "bioconda::captnseq-toolkit=0.1.2"
+    container "quay.io/biocontainers/captnseq-toolkit:0.1.2--pyhdfd78af_0"
 
     input:
     tuple val(meta), path(sample)
@@ -10,14 +12,15 @@ process SITES2GENES {
 
     output:
     tuple val(meta), path("${meta.id}-genes_insertions.tsv"), emit: tsv
+    tuple val("${task.process}"), val('captnseq-toolkit'), eval('captnseq-toolkit --version | sed "s/.* //"'), emit: versions_captnseq_toolkit, topic: versions
 
     script:
     """
-    sites2genes.py \
-        --features ${features} \
-        --sample ${sample} \
-        --length-pc-start ${params.sites2genes_params.length_pc_start} \
-        --length-pc-stop ${params.sites2genes_params.length_pc_stop} \
+    captnseq-toolkit sites2genes \\
+        --features ${features} \\
+        --sample ${sample} \\
+        --length-pc-start ${params.sites2genes_params.length_pc_start} \\
+        --length-pc-stop ${params.sites2genes_params.length_pc_stop} \\
         --output ${meta.id}-genes_insertions.tsv
     """
 }
