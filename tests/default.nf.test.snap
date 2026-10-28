@@ -21,8 +21,11 @@
                 "FASTQC": {
                     "fastqc": "0.12.1"
                 },
+                "GENE_MATRICES": {
+                    "captnseq-toolkit": "0.2.0"
+                },
                 "SAM2SITES": {
-                    "captnseq-toolkit": "0.1.2"
+                    "captnseq-toolkit": "0.2.0"
                 },
                 "SAMTOOLS_FIXMATE": {
                     "samtools": 1.24
@@ -55,10 +58,10 @@
                     "samtools": 1.24
                 },
                 "SITES2GENES": {
-                    "captnseq-toolkit": "0.1.2"
+                    "captnseq-toolkit": "0.2.0"
                 },
                 "STATISTI_CALL": {
-                    "captnseq-toolkit": "0.1.2"
+                    "captnseq-toolkit": "0.2.0"
                 },
                 "Workflow": {
                     "nf-core/captnseq": "v1.0.0dev"
@@ -132,6 +135,9 @@
                 "09_sample_summary/1_mapped_summary.tsv",
                 "09_sample_summary/2_insertion_summary.tsv",
                 "09_sample_summary/3_chr_count.tsv",
+                "09_sample_summary/4_gene_insertion_counts.tsv",
+                "09_sample_summary/5_gene_read_counts.tsv",
+                "09_sample_summary/6_gene_essentiality.tsv",
                 "bwa",
                 "bwa/test_01.sam",
                 "bwa/test_02.sam",
@@ -352,19 +358,22 @@
                 "test_02.bed:md5,b0b75a363225f08526a6dfcb2ddf09e6",
                 "test_01-intersect.bed:md5,3c07071e03ef11a196a34d9e64111e2b",
                 "test_02-intersect.bed:md5,2bfb898727eeaad1112a2bf4d0698d8c",
-                "test_01-genes_insertions.all.csv:md5,e1eb319fb4956a34e186975b7c28bd9d",
-                "test_01-genes_insertions.ambig.csv:md5,3a09f9ffbee74c769a2e705b54096a3c",
-                "test_01-genes_insertions.essen.csv:md5,c4c1a7fc5288a8bdd6bf18f5f26d70aa",
-                "test_01-genes_insertions.nonessen.csv:md5,8466a06971a0dbbf0d07f3c524121cb7",
+                "test_01-genes_insertions.all.csv:md5,2d9a7945f8b14acc82f096e003d134a3",
+                "test_01-genes_insertions.ambig.csv:md5,e1f1786f1c27a5442b795649e11cf447",
+                "test_01-genes_insertions.essen.csv:md5,794f5d526e5753b308f9fdcf70cb0107",
+                "test_01-genes_insertions.nonessen.csv:md5,83ae90f1afa6503129738715864c60ee",
                 "test_01-genes_insertions.tsv:md5,9f82c2134a1f5321054e3592fc495ea2",
-                "test_02-genes_insertions.all.csv:md5,66aafd08b0f5461f5dcbd6e7294d8bdb",
-                "test_02-genes_insertions.ambig.csv:md5,408fc1bac09a514fa7990e36ecc98203",
-                "test_02-genes_insertions.essen.csv:md5,bb8fd485143bbc20d326ec43497e817c",
-                "test_02-genes_insertions.nonessen.csv:md5,88aa8912ca75410c271024d3b52941a6",
+                "test_02-genes_insertions.all.csv:md5,936f9039ce5399e8d026692ebb0c25a8",
+                "test_02-genes_insertions.ambig.csv:md5,e58aaf1997f473e5bb9ed0bcdbefc0af",
+                "test_02-genes_insertions.essen.csv:md5,3f1270dd0dee74cf488bb17ca3e2d9a9",
+                "test_02-genes_insertions.nonessen.csv:md5,a3459867974b9437ae3c4d18c7938423",
                 "test_02-genes_insertions.tsv:md5,365a5891d01ac6ddbf61467c3d74db6b",
                 "1_mapped_summary.tsv:md5,893afd4643b437d0e038cb4e570ef1bd",
                 "2_insertion_summary.tsv:md5,19cb5a605686be3be36183378dd1bdf0",
                 "3_chr_count.tsv:md5,29713c25b12b023e5e3f62dc9f157acc",
+                "4_gene_insertion_counts.tsv:md5,2746ce0dce7b2f25f306d3b9bab242c1",
+                "5_gene_read_counts.tsv:md5,eec46952635e40ba2df2d27a511b928f",
+                "6_gene_essentiality.tsv:md5,2f1518900f0d74714dda195d47d81f39",
                 "test_01.sam:md5,202819db43b35b2ed3146069f1754623",
                 "test_02.sam:md5,1b9d6ef14d9ce80849cdd195e26d4762",
                 "cutadapt_filtered_reads_plot.txt:md5,8c055c5644b74985d365a1d130853fac",
@@ -417,7 +426,7 @@
                 "test_02_fixmate.bam:md5,50537ba0009eb71b0b863f6dca4329f7"
             ]
         ],
-        "timestamp": "2026-10-27T12:15:27.462764632",
+        "timestamp": "2026-10-28T10:49:04.477224834",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.10.0"

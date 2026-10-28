@@ -9,7 +9,8 @@ Initial release of nf-core/captnseq, created with the [nf-core](https://nf-co.re
 
 ### `Added`
 
-- Insertion-site calling, gene assignment and essentiality calling now run [captnseq-toolkit](https://github.com/simonjeanneau/captnseq-toolkit) v0.1.2 (Bioconda), replacing the `bin/` scripts.
+- Insertion-site calling, gene assignment and essentiality calling now run [captnseq-toolkit](https://github.com/simonjeanneau/captnseq-toolkit) (Bioconda), replacing the `bin/` scripts.
+- `GENE_MATRICES` step (`captnseq-toolkit aggregate`): compiles the per-sample essentiality tables into run-level gene x sample tables of insertion counts, read counts and essentiality calls (`4_gene_insertion_counts.tsv`, `5_gene_read_counts.tsv`, `6_gene_essentiality.tsv`).
 
 ### `Fixed`
 
@@ -17,6 +18,6 @@ Initial release of nf-core/captnseq, created with the [nf-core](https://nf-co.re
 
 | Tool             | Previous version | Current version |
 | ---------------- | ---------------- | --------------- |
-| captnseq-toolkit |                  | 0.1.2           |
+| captnseq-toolkit |                  | 0.2.0           |
 
 ### `Deprecated`

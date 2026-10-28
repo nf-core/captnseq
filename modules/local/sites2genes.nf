@@ -3,8 +3,8 @@
 process SITES2GENES {
     tag "${meta.id}"
 
-    conda "bioconda::captnseq-toolkit=0.1.2"
-    container "quay.io/biocontainers/captnseq-toolkit:0.1.2--pyhdfd78af_0"
+    conda "bioconda::captnseq-toolkit=0.2.0"
+    container "quay.io/biocontainers/captnseq-toolkit:0.2.0--pyhdfd78af_0"
 
     input:
     tuple val(meta), path(sample)
