@@ -23,6 +23,7 @@ include { BEDTOOLS_INTERSECT     } from '../modules/nf-core/bedtools/intersect/m
 include { SAM2SITES                  } from '../modules/local/sam2sites'
 include { SITES2GENES                } from '../modules/local/sites2genes'
 include { STATISTI_CALL              } from '../modules/local/statisti_call'
+include { GENE_MATRICES              } from '../modules/local/gene_matrices'
 include { PRODUCE_MAPPED_READ_COUNTS } from '../modules/local/produce_mapped_read_counts'
 include { PRODUCE_INSERTION_COUNTS   } from '../modules/local/produce_insertion_counts'
 include { PRODUCE_CHR_COUNTS         } from '../modules/local/produce_chr_counts'
@@ -130,6 +131,14 @@ workflow CAPTNSEQ {
     BEDTOOLS_INTERSECT(SAM2SITES.out.unstranded_unnormalized.map { meta, bg -> [ meta, ch_genome_features, bg ] }, [ [:], [] ], 'bed')
     SITES2GENES(BEDTOOLS_INTERSECT.out.intersect, ch_genome_features)
     STATISTI_CALL(SITES2GENES.out.tsv)
+
+    //
+    // Gene x sample matrices (insertion count, read count, essentiality) over all samples
+    //
+    GENE_MATRICES(
+        STATISTI_CALL.out.all.map { _meta, csv -> csv }.collect(),
+        STATISTI_CALL.out.essen.map { _meta, csv -> csv }.collect(),
+    )
 
     //
     // Reporting - per-sample chr counts, then whole-run summaries

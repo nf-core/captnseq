@@ -40,8 +40,9 @@ You provide a samplesheet of paired-end FASTQ files, a reference genome FASTA an
 7. Insertion-site calling from the deduplicated reads ([`captnseq-toolkit sam2sites`](https://github.com/simonjeanneau/captnseq-toolkit)): one record per insertion site, written as BED and as normalised or raw, stranded or unstranded bedGraph tracks.
 8. Assignment of insertion sites to genes ([`bedtools intersect`](https://bedtools.readthedocs.io/) and [`captnseq-toolkit sites2genes`](https://github.com/simonjeanneau/captnseq-toolkit)). The informative part of each gene can be restricted, so that insertions near the start or end of a gene can be ignored
 9. Essentiality calling ([`captnseq-toolkit essentiality`](https://github.com/simonjeanneau/captnseq-toolkit), a Python port of the TRADIS essentiality script): genes are classified as essential, ambiguous or non-essential, with QC and changepoint plots for each sample
-10. Run-level summaries: mapped reads, insertion-site counts and per-contig read counts for all samples
-11. Aggregated QC report ([`MultiQC`](http://multiqc.info/))
+10. Compilation of the per-sample essentiality calls over all samples ([`captnseq-toolkit aggregate`](https://github.com/simonjeanneau/captnseq-toolkit)): gene x sample tables of insertion counts, read counts and essentiality calls
+11. Run-level summaries: mapped reads, insertion-site counts and per-contig read counts for all samples
+12. Aggregated QC report ([`MultiQC`](http://multiqc.info/))
 
 ## Usage
 
@@ -125,7 +126,7 @@ The results directory contains one folder per stage. Every file name starts with
 | `05_sitescall/`         | Insertion sites as BED and bedGraph tracks, from the deduplicated reads.                                                                                                                                                |
 | `06_intersection/`      | Insertion sites overlapping each gene of the annotation.                                                                                                                                                                |
 | `07_statisticalreport/` | **Main results.** Insertions per gene (`*-genes_insertions.tsv`), the essentiality calls (`*.essen.csv`, `*.ambig.csv`, `*.nonessen.csv`, `*.all.csv`) and QC and changepoint plots (`*_QC_and_changepoint_plots.pdf`). |
-| `09_sample_summary/`    | Run-level tables: `1_mapped_summary.tsv`, `2_insertion_summary.tsv` and `3_chr_count.tsv`.                                                                                                                              |
+| `09_sample_summary/`    | Run-level tables: `1_mapped_summary.tsv`, `2_insertion_summary.tsv`, `3_chr_count.tsv`, and the gene x sample tables `4_gene_insertion_counts.tsv`, `5_gene_read_counts.tsv`, `6_gene_essentiality.tsv`.                |
 | `multiqc/`              | The MultiQC report, `multiqc_report.html`, combining the FastQC, Cutadapt, fastp and flagstat results.                                                                                                                  |
 | `pipeline_info/`        | Nextflow execution reports and the versions of all tools used.                                                                                                                                                          |
 
